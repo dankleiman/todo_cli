@@ -32,7 +32,7 @@ when 'list'
       counter += 1
     end
   end
-when 'done'
+when 'done', 'remove'
   task_number = ARGV.shift.to_i
   File.open(TODO_FILE, 'r') do |file|
     File.open("#{TODO_FILE}.new", 'w') do |new_file|
@@ -40,25 +40,13 @@ when 'done'
       file.readlines.each do |line|
         name, created_at, completed = read_todo(line)
         if task_number == counter
-          write_todo(new_file, name, created_at, Time.now)
-          puts("Task #{counter} completed")
-        else
-          write_todo(new_file, name, created_at, completed)
-        end
-        counter += 1
-      end
-    end
-  end
-  `mv "#{TODO_FILE}.new" "#{TODO_FILE}"`
-when 'remove'
-  task_number = ARGV.shift.to_i
-  File.open(TODO_FILE, 'r') do |file|
-    File.open("#{TODO_FILE}.new", 'w') do |new_file|
-      counter = 1
-      file.readlines.each do |line|
-        name, created_at, completed = read_todo(line)
-        if task_number == counter
-          puts("Task #{counter} removed")
+          case command
+          when 'done'
+            write_todo(new_file, name, created_at, Time.now)
+            puts("Task #{counter} completed")
+          when 'remove'
+            puts("Task #{counter} removed")
+          end
         else
           write_todo(new_file, name, created_at, completed)
         end
